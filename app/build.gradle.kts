@@ -1,48 +1,54 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.gms.google-services") // If you're using Firebase
 }
 
 android {
     namespace = "com.example.musicalinstrumentsaggregator"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.musicalinstrumentsaggregator"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = 21
+        //noinspection OldTargetApi
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
+    // Ensure Java & Kotlin match (fixes "Inconsistent JVM-target" error)
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
 dependencies {
+    // ----- AndroidX Libraries -----
+    // Pick the newer Core KTX version (v1101) and remove duplicates
+    implementation(libs.androidx.core.ktx.v1101)
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    // Use the AppCompat 1.6.1 entry (remove any other duplicates)
+    implementation(libs.androidx.appcompat.v161)
+
+    // Material 1.9.0
+    implementation(libs.material.v190)
+
+    // Activity KTX
+    implementation(libs.androidx.activity.ktx)
+
+    // ConstraintLayout 2.1.4
+    implementation(libs.androidx.constraintlayout.v214)
+
+    // ----- Firebase (optional) -----
+    implementation(platform(libs.firebase.bom.v3200))
+    implementation(libs.google.firebase.firestore.ktx)
 }
