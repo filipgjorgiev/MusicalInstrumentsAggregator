@@ -1,13 +1,23 @@
 package com.example.musicalinstrumentsaggregator
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.musicalinstrumentsaggregator.R
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
     private val TAG = "FirestoreDebug"
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var toggle: ActionBarDrawerToggle
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,19 +54,93 @@ class MainActivity : AppCompatActivity() {
             .addOnFailureListener { exception ->
                 Log.e(TAG, "Firestore Error: ", exception)
             }
-        // Add a test document
-//        val testDoc = hashMapOf(
-//            "Name" to "Test Piano",
-//            "Category" to "Keyboard"
-//        )
-//        db.collection("musical_instruments")
-//            .add(testDoc)
-//            .addOnSuccessListener {
-//                Log.d(TAG, "Test document added!")
+
+
+
+        // 1. Find views
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        drawerLayout = findViewById(R.id.drawerLayout)
+
+        // 2. Set the Toolbar as the ActionBar
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = ""
+        // 3. Create ActionBarDrawerToggle
+        toggle = ActionBarDrawerToggle(
+            this,
+            drawerLayout,
+            toolbar,
+            R.string.navigation_drawer_open,  // "Open drawer" string
+            R.string.navigation_drawer_close  // "Close drawer" string
+        )
+
+        // 4. Attach the toggle to the DrawerLayout
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        // 4. Optional: Setup RecyclerView for the grid
+//        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+//        recyclerView.layoutManager = GridLayoutManager(this, 2)
+//        recyclerView.adapter = MusicalInstrumentAdapter(getItems())
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+
+        // Show items in a grid of 2 columns
+        recyclerView.layoutManager = GridLayoutManager(this, 2)
+
+        // Prepare your list of icons
+        val iconList = listOf(
+            IconItem("Acoustic Guitars", R.drawable.ic_acoustic_guitar),
+            IconItem("Electric Guitars", R.drawable.ic_electric_guitar),
+            IconItem("Classical Guitars", R.drawable.ic_classical_guitar),
+            IconItem("Bass Guitars", R.drawable.ic_bass_guitar),
+            IconItem("Left-Hand Guitars", R.drawable.ic_left_hand_guitar),
+            IconItem("Pianos", R.drawable.ic_piano),
+            IconItem("Stage Pianos", R.drawable.ic_stage_piano),
+            IconItem("Keyboards", R.drawable.ic_keyboard),
+            IconItem("Synthesizers", R.drawable.ic_synthesizer),
+            IconItem("Midi Keyboard", R.drawable.ic_midi_keyboard),
+            IconItem("Acoustic Drums", R.drawable.ic_acoustic_drums),
+            IconItem("Electronic Drums", R.drawable.ic_electronic_drums),
+            IconItem("Violins", R.drawable.ic_violins),
+            IconItem("Violas", R.drawable.ic_viola),
+            IconItem("Cellos", R.drawable.ic_cello)
+            // etc.
+        )
+
+        // Set the adapter
+        recyclerView.adapter = IconAdapter(iconList)
+
+
+        val navView = findViewById<NavigationView>(R.id.navigationView)
+
+// 1. Get the menu object from the NavigationView
+        val menu = navView.menu
+        menu.add("Home")
+// 2. Add each category name from iconList as a menu item
+        for (iconItem in iconList) {
+            menu.add(iconItem.title)
+        }
+
+
+// 3. (Optional) Handle menu item clicks
+//        navView.setNavigationItemSelectedListener { menuItem ->
+//            // Here you can see which item was clicked
+//            // For example, compare menuItem.title or use an ID
+//            // e.g. "Acoustic Guitars", "Electric Guitars", etc.
+//            when (menuItem.title) {
+//                "Acoustic Guitars" -> {
+//                    // do something
+//                }
+//                "Electric Guitars" -> {
+//                    // do something
+//                }
+//                // ...
 //            }
-//            .addOnFailureListener { e ->
-//                Log.e(TAG, "Error adding test doc", e)
-//            }
+//
+//            // Close the drawer
+            drawerLayout.closeDrawer(GravityCompat.START)
+            true
+//        }
+
 
     }
 }
