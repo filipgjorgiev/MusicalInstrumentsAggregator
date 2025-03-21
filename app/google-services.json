@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "986845623152",
+    "project_id": "musicalinstumentsaggregator",
+    "storage_bucket": "musicalinstumentsaggregator.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:986845623152:android:30aadedde99f2204add5b5",
+        "android_client_info": {
+          "package_name": "com.example.musicalinstrumentsaggregator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBI947_VVTjwR7qlUhB3ZxhbaqpwiZdDYM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
