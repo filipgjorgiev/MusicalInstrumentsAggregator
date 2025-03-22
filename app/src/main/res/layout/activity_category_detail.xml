@@ -1,0 +1,102 @@
+<!-- res/layout/activity_category_detail.xml -->
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/detailDrawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Main Content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/detailToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#00BCD4"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
+
+        <!-- Remove or hide the big category TextView -->
+        <!-- <TextView
+             android:id="@+id/categoryTitleTextView"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Category Name"
+             android:textSize="24sp"
+             android:textStyle="bold"
+             android:layout_margin="16dp"
+             android:visibility="gone" /> -->
+
+        <!-- Two placeholders for filters -->
+        <!-- res/layout/activity_category_detail.xml -->
+
+        <!-- ... DrawerLayout/LinearLayout setup above ... -->
+
+        <!-- First row: "Filter by price" + Spinner -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/filterLabelPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filter by price"
+                android:textSize="16sp"
+                android:layout_marginEnd="8dp" />
+
+            <Spinner
+                android:id="@+id/filterSpinnerPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dropdown" />
+        </LinearLayout>
+
+        <!-- Second row: "Filter by shop" + Spinner -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/filterLabelShop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filter by shop"
+                android:textSize="16sp"
+                android:layout_marginEnd="8dp" />
+
+            <Spinner
+                android:id="@+id/filterSpinnerShop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dropdown" />
+        </LinearLayout>
+
+        <!-- ... rest of your layout (e.g., instrumentsPlaceholder, etc.) ... -->
+
+
+        <!-- Placeholder for instruments list -->
+        <TextView
+            android:id="@+id/instrumentsPlaceholder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Instruments list goes here..."
+            android:layout_margin="16dp" />
+    </LinearLayout>
+
+    <!-- Side Menu (NavigationView) -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationDetailView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"/>
+</androidx.drawerlayout.widget.DrawerLayout>

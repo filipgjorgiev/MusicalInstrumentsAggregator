@@ -1,4 +1,5 @@
 package com.example.musicalinstrumentsaggregator
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -87,24 +88,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = GridLayoutManager(this, 2)
 
         // Prepare your list of icons
-        val iconList = listOf(
-            IconItem("Acoustic Guitars", R.drawable.ic_acoustic_guitar),
-            IconItem("Electric Guitars", R.drawable.ic_electric_guitar),
-            IconItem("Classical Guitars", R.drawable.ic_classical_guitar),
-            IconItem("Bass Guitars", R.drawable.ic_bass_guitar),
-            IconItem("Left-Hand Guitars", R.drawable.ic_left_hand_guitar),
-            IconItem("Pianos", R.drawable.ic_piano),
-            IconItem("Stage Pianos", R.drawable.ic_stage_piano),
-            IconItem("Keyboards", R.drawable.ic_keyboard),
-            IconItem("Synthesizers", R.drawable.ic_synthesizer),
-            IconItem("Midi Keyboard", R.drawable.ic_midi_keyboard),
-            IconItem("Acoustic Drums", R.drawable.ic_acoustic_drums),
-            IconItem("Electronic Drums", R.drawable.ic_electronic_drums),
-            IconItem("Violins", R.drawable.ic_violins),
-            IconItem("Violas", R.drawable.ic_viola),
-            IconItem("Cellos", R.drawable.ic_cello)
-            // etc.
-        )
+        val iconList = InstrumentCategoriesData.getIconList()
 
         // Set the adapter
         recyclerView.adapter = IconAdapter(iconList)
@@ -114,12 +98,33 @@ class MainActivity : AppCompatActivity() {
 
 // 1. Get the menu object from the NavigationView
         val menu = navView.menu
-        menu.add("Home")
-// 2. Add each category name from iconList as a menu item
+
+// Add a "Home" item
+
+
+// Add each category name from iconList as a menu item
         for (iconItem in iconList) {
             menu.add(iconItem.title)
         }
 
+// 2. Handle clicks in the side menu
+        navView.setNavigationItemSelectedListener { menuItem ->
+            val selectedTitle = menuItem.title.toString()
+
+            if (selectedTitle == "Home") {
+                // TODO: Handle "Home" action here
+                // e.g., navigate to main screen or refresh the main page
+            } else {
+                // All other titles are categories
+                val intent = Intent(this, CategoryDetailActivity::class.java)
+                intent.putExtra("categoryName", selectedTitle)
+                startActivity(intent)
+            }
+
+            // Close the drawer
+            drawerLayout.closeDrawer(GravityCompat.START)
+            true
+        }
 
 // 3. (Optional) Handle menu item clicks
 //        navView.setNavigationItemSelectedListener { menuItem ->

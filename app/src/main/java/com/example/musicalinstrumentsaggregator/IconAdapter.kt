@@ -1,5 +1,6 @@
 package com.example.musicalinstrumentsaggregator
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,15 @@ class IconAdapter(private val items: List<IconItem>) :
         val currentItem = items[position]
         holder.title.text = currentItem.title
         holder.image.setImageResource(currentItem.imageRes)
+
+        holder.itemView.setOnClickListener {
+            val context = holder.itemView.context
+            val intent = Intent(context, CategoryDetailActivity::class.java)
+            intent.putExtra("categoryName", currentItem.title)
+            context.startActivity(intent)
+        }
     }
+
 
     override fun getItemCount() = items.size
 }
