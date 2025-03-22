@@ -3,6 +3,7 @@ activityKtx = "1.10.1"
 agp = "8.7.2"
 androidxCoreKtx = "1.9.0"
 appcompatVersion = "1.6.1"
+coil = "2.2.2"
 constraintlayoutVersion = "2.1.4"
 coreKtxVersion = "1.10.1"
 firebaseBom = "33.10.0"
@@ -28,6 +29,7 @@ androidx-constraintlayout-v214 = { module = "androidx.constraintlayout:constrain
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-ktx-v1101 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
 androidx-core-ktx-v190 = { module = "androidx.core:core-ktx", version.ref = "androidxCoreKtx" }
+coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-bom-v3200 = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }

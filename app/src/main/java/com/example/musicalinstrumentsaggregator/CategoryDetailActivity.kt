@@ -3,18 +3,27 @@ package com.example.musicalinstrumentsaggregator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import androidx.appcompat.widget.SearchView
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.firestore.FirebaseFirestore
 
 class CategoryDetailActivity : AppCompatActivity() {
-
+    private val TAG = "FirestoreDebug"
     private lateinit var detailDrawerLayout: DrawerLayout
     private lateinit var detailToolbar: Toolbar
     private lateinit var navView: NavigationView
@@ -22,6 +31,13 @@ class CategoryDetailActivity : AppCompatActivity() {
 
     private lateinit var filterSpinnerPrice: Spinner
     private lateinit var filterSpinnerShop: Spinner
+
+    private lateinit var searchView: SearchView
+
+    private var allInstruments: List<Instrument> = emptyList()
+
+    private lateinit var adapter: InstrumentAdapter
+
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,9 +128,111 @@ class CategoryDetailActivity : AppCompatActivity() {
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         filterSpinnerShop.adapter = adapter2
 
+//initializing firestore
+        val db = FirebaseFirestore.getInstance()
+
+
+////        // Check if Firestore is initialized
+//        if (db != null) {
+//            Log.d(TAG, "Firestore initialized successfully!")
+//        } else {
+//            Log.e(TAG, "Firestore failed to initialize!")
+//            return
+//        }
+//
+//        // Fetch data from Firestore
+//        db.collection("/musical_instruments")
+//            .get()
+//            .addOnSuccessListener { documents ->
+//                Log.d(TAG, "Success! Found ${documents.size()} documents.")
+//                if (documents.isEmpty) {
+//                    Log.d(TAG, "No documents in 'musical_instruments' collection.")
+//                } else {
+//                    for (document in documents) {
+//                        Log.d(TAG, "Document ID: ${document.id}")
+//                        Log.d(TAG, "Data: ${document.data}")
+//                    }
+//                }
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.e(TAG, "Firestore Error: ", exception)
+//            }
+
+        // 3. Query instruments for this category
+        db.collection("/musical_instruments")
+            .whereEqualTo("Category", categoryName)
+            .get()
+            .addOnSuccessListener { documents ->
+                // -- Place your code snippet here --
+                val instrumentList = mutableListOf<Instrument>()
+                for (document in documents) {
+
+                    val instrument = document.toObject(Instrument::class.java)
+                    instrumentList.add(instrument)
+                }
+
+                allInstruments=instrumentList
+
+                // Now you have a list of Instrument objects
+                setupRecyclerView(instrumentList)
+            }
+            .addOnFailureListener { exception ->
+                // Handle error
+                Log.e("CategoryDetailActivity", "Error fetching instruments", exception)
+            }
+
+        // (Optional) Set up the toolbar title
+        supportActionBar?.title = categoryName
+
+        // 1. Find the SearchView
+        searchView = findViewById(R.id.searchView)
+        searchView.queryHint = "Search by name"
+        searchView.isIconified = false // Expand it
+
+        // 2. Set a listener to respond to query changes
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                // Called when user hits "search" or enters text, then confirms
+                return true // We handle it in onQueryTextChange for live filtering
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // Called as the user types each character
+                val query = newText ?: ""
+
+                // Filter the allInstruments list
+                val filteredList = allInstruments.filter { instrument ->
+                    instrument.Name.contains(query, ignoreCase = true)
+                }
+
+                // Rebind the RecyclerView with the filtered list
+                setupRecyclerView(filteredList)
+
+                return true
+            }
+        })
+
+
 
 
 
     }
+
+
+    private fun setupRecyclerView(instrumentList: List<Instrument>) {
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewInCategory)
+        if (!::adapter.isInitialized) {
+            // First time
+            adapter = InstrumentAdapter(instrumentList.toMutableList())
+            recyclerView.layoutManager = LinearLayoutManager(this)
+            recyclerView.adapter = adapter
+        } else {
+            // Just update the existing adapter data
+            adapter.updateData(instrumentList)
+        }
+    }
+
+
+
 }
 
