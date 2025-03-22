@@ -82,14 +82,20 @@
         </LinearLayout>
 
         <!-- ... rest of your layout (e.g., instrumentsPlaceholder, etc.) ... -->
-
+        <!-- Search row -->
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:queryHint="Search by name"
+            android:iconifiedByDefault="false"
+            android:layout_margin="8dp" />
 
         <!-- Placeholder for instruments list -->
-        <TextView
-            android:id="@+id/instrumentsPlaceholder"
-            android:layout_width="wrap_content"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewInCategory"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Instruments list goes here..."
             android:layout_margin="16dp" />
     </LinearLayout>
 

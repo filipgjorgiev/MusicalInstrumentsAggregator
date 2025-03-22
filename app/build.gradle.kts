@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services") // If you're using Firebase
+
 }
 
 android {
@@ -48,7 +49,10 @@ dependencies {
     // ConstraintLayout 2.1.4
     implementation(libs.androidx.constraintlayout.v214)
 
-    // ----- Firebase (optional) -----
+    // ----- Firebase -----
     implementation(platform(libs.firebase.bom.v3200))
     implementation(libs.google.firebase.firestore.ktx)
+
+    //Coil
+    implementation(libs.coil)
 }

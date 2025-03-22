@@ -28,33 +28,33 @@ class MainActivity : AppCompatActivity() {
         FirebaseApp.initializeApp(this)
 
         // Get Firestore instance
-        val db = FirebaseFirestore.getInstance()
-
-        // Check if Firestore is initialized
-        if (db != null) {
-            Log.d(TAG, "Firestore initialized successfully!")
-        } else {
-            Log.e(TAG, "Firestore failed to initialize!")
-            return
-        }
-
-        // Fetch data from Firestore
-        db.collection("/musical_instruments")
-            .get()
-            .addOnSuccessListener { documents ->
-                Log.d(TAG, "Success! Found ${documents.size()} documents.")
-                if (documents.isEmpty) {
-                    Log.d(TAG, "No documents in 'musical_instruments' collection.")
-                } else {
-                    for (document in documents) {
-                        Log.d(TAG, "Document ID: ${document.id}")
-                        Log.d(TAG, "Data: ${document.data}")
-                    }
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.e(TAG, "Firestore Error: ", exception)
-            }
+//        val db = FirebaseFirestore.getInstance()
+//
+//        // Check if Firestore is initialized
+//        if (db != null) {
+//            Log.d(TAG, "Firestore initialized successfully!")
+//        } else {
+//            Log.e(TAG, "Firestore failed to initialize!")
+//            return
+//        }
+//
+//        // Fetch data from Firestore
+//        db.collection("/musical_instruments")
+//            .get()
+//            .addOnSuccessListener { documents ->
+//                Log.d(TAG, "Success! Found ${documents.size()} documents.")
+//                if (documents.isEmpty) {
+//                    Log.d(TAG, "No documents in 'musical_instruments' collection.")
+//                } else {
+//                    for (document in documents) {
+//                        Log.d(TAG, "Document ID: ${document.id}")
+//                        Log.d(TAG, "Data: ${document.data}")
+//                    }
+//                }
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.e(TAG, "Firestore Error: ", exception)
+//            }
 
 
 
