@@ -12,7 +12,20 @@
           "package_name": "com.example.musicalinstrumentsaggregator"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "986845623152-4i9b16ue7ghu0dd1lpd2q0vniso00n52.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.musicalinstrumentsaggregator",
+            "certificate_hash": "abdf0d9578d58ecc6b7b5305e0e36d1d7843e717"
+          }
+        },
+        {
+          "client_id": "986845623152-7mt5a88h7guhmvv1aumja6jqlj38eic7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBI947_VVTjwR7qlUhB3ZxhbaqpwiZdDYM"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "986845623152-7mt5a88h7guhmvv1aumja6jqlj38eic7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
