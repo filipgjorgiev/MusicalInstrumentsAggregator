@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
@@ -116,7 +118,7 @@ class CategoryDetailActivity : AppCompatActivity() {
         // 3. Populate Spinners with sample data
         // Populate them with sample data
         val priceOptions = listOf("None", "Low to High", "High to Low")
-        val shopOptions = listOf("None", "Shop A", "Shop B", "Shop C")
+        val shopOptions = listOf("None", "Do Re Mi", "Artist", "Mimi Muzika")
 
         // Create ArrayAdapter for Spinner 1
         val adapter1 = ArrayAdapter(this, R.layout.spinner_item, priceOptions)
@@ -213,10 +215,55 @@ class CategoryDetailActivity : AppCompatActivity() {
         })
 
 
+        filterSpinnerPrice.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                // Re-filter every time a selection changes
+                applyFilters()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        filterSpinnerShop.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                applyFilters()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+
+
+
+
+
 
 
 
     }
+
+    private fun applyFilters() {
+        // 1. Get current spinner selections
+        val selectedPriceFilter = filterSpinnerPrice.selectedItem.toString() // "None", "Low to High", "High to Low"
+        val selectedShopFilter = filterSpinnerShop.selectedItem.toString()   // "None", "Do Re Mi", etc.
+
+        // 2. Start with the full list
+        var filteredList = allInstruments
+
+        // 3. Filter by shop if not "None"
+        if (selectedShopFilter != "None") {
+            filteredList = filteredList.filter { it.Shop == selectedShopFilter }
+        }
+
+        // 4. Sort by price if needed
+        filteredList = when (selectedPriceFilter) {
+            "Low to High" -> filteredList.sortedBy { it.Price }  // ascending
+            "High to Low" -> filteredList.sortedByDescending { it.Price }
+            else -> filteredList // "None" => no sorting
+        }
+
+        // 5. Update the RecyclerView
+        setupRecyclerView(filteredList)
+    }
+
 
 
     private fun setupRecyclerView(instrumentList: List<Instrument>) {
