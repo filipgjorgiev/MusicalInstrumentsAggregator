@@ -1,6 +1,5 @@
 package com.example.musicalinstrumentsaggregator
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
@@ -14,9 +13,10 @@ import coil.load
 import java.text.NumberFormat
 import java.util.Locale
 
-class InstrumentAdapter(
-    private val instrumentList: MutableList<Instrument>
-) : RecyclerView.Adapter<InstrumentAdapter.ViewHolder>()  {
+class FavoritesAdapter(
+    private val favoritesList: MutableList<Instrument>,
+    private val onEmptyCallback: () -> Unit
+) : RecyclerView.Adapter<FavoritesAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.instrumentImageView)
@@ -34,9 +34,9 @@ class InstrumentAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val instrument = instrumentList[position]
+        val instrument = favoritesList[position]
 
-        // Name
+        // It's Favorites, so presumably already a favorite
         holder.nameTextView.text = instrument.Name
 
         holder.nameTextView.setOnClickListener {
@@ -74,32 +74,23 @@ class InstrumentAdapter(
             }
         }
 
+        holder.favouriteIcon.setImageResource(R.drawable.ic_favorite_filled)
 
-        // Show filled or outlined heart
-        if (FavoritesManager.isFavorite(instrument)) {
-            holder.favouriteIcon.setImageResource(R.drawable.ic_favorite_filled) // Outline
-        } else {
-            holder.favouriteIcon.setImageResource(R.drawable.ic_favorite_border)
-        }
-
-        // 2. Toggle on click
+        // When user taps to un-favorite
         holder.favouriteIcon.setOnClickListener {
-            if (FavoritesManager.isFavorite(instrument)) {
-                FavoritesManager.removeFavorite(instrument)
-                holder.favouriteIcon.setImageResource(R.drawable.ic_favorite_border)
-            } else {
-                FavoritesManager.addFavorite(instrument)
-                holder.favouriteIcon.setImageResource(R.drawable.ic_favorite_filled)
+            // 1. Remove from global manager
+            FavoritesManager.removeFavorite(instrument)
+
+            // 2. Remove from adapter's data list
+            favoritesList.removeAt(holder.adapterPosition)
+            notifyItemRemoved(holder.adapterPosition)
+
+            // 3. If the list is now empty, invoke our callback
+            if (favoritesList.isEmpty()) {
+                onEmptyCallback()
             }
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateData(newList: List<Instrument>) {
-        instrumentList.clear()
-        instrumentList.addAll(newList)
-        notifyDataSetChanged()
-    }
-
-    override fun getItemCount() = instrumentList.size
+    override fun getItemCount(): Int = favoritesList.size
 }

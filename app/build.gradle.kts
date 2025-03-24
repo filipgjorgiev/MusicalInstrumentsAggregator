@@ -55,4 +55,8 @@ dependencies {
 
     //Coil
     implementation(libs.coil)
+    implementation(libs.androidx.activity)
+
+//   Gson
+    implementation(libs.gson)
 }

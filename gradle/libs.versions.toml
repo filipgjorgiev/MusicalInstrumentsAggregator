@@ -11,6 +11,7 @@ firebaseBomVersion = "32.0.0"
 firebaseFirestore = "25.1.2"
 firebaseFirestoreKtx = "25.1.2"
 googleServices = "4.4.2"
+gson = "2.10.1"
 kotlin = "1.9.24"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -38,6 +39,7 @@ firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx"
 google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 google-firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

@@ -27,6 +27,9 @@ class MainActivity : AppCompatActivity() {
         // Initialize Firebase
         FirebaseApp.initializeApp(this)
 
+        // Initialize FavoritesManager once
+        FavoritesManager.init(this)
+
         // Get Firestore instance
 //        val db = FirebaseFirestore.getInstance()
 //
@@ -100,7 +103,7 @@ class MainActivity : AppCompatActivity() {
         val menu = navView.menu
 
 // Add a "Home" item
-
+        menu.add("Favorites")
 
 // Add each category name from iconList as a menu item
         for (iconItem in iconList) {
@@ -111,9 +114,10 @@ class MainActivity : AppCompatActivity() {
         navView.setNavigationItemSelectedListener { menuItem ->
             val selectedTitle = menuItem.title.toString()
 
-            if (selectedTitle == "Home") {
-                // TODO: Handle "Home" action here
-                // e.g., navigate to main screen or refresh the main page
+            if (selectedTitle == "Favorites") {
+                val intent = Intent(this, FavoritesActivity::class.java)
+                startActivity(intent)
+
             } else {
                 // All other titles are categories
                 val intent = Intent(this, CategoryDetailActivity::class.java)

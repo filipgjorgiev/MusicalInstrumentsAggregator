@@ -81,6 +81,7 @@ class CategoryDetailActivity : AppCompatActivity() {
         val menu = navView.menu
 
         menu.add("Home")
+        menu.add("Favorites")
 
         for (category in allCategories){
             menu.add(category.title)
@@ -90,12 +91,17 @@ class CategoryDetailActivity : AppCompatActivity() {
         // 6. Handle menu item clicks
         navView.setNavigationItemSelectedListener { menuItem ->
             val selectedTitle = menuItem.title.toString()
+            Log.d("NAV_DEBUG", "User tapped: $selectedTitle")
 
             when (selectedTitle) {
                 "Home" -> {
                     // e.g., go back to MainActivity or refresh the main page
                     val intent = Intent(this, MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    startActivity(intent)
+                }
+                "Favorites" ->{
+                    val intent = Intent(this, FavoritesActivity::class.java)
                     startActivity(intent)
                 }
                 else -> {
@@ -168,8 +174,12 @@ class CategoryDetailActivity : AppCompatActivity() {
                 // -- Place your code snippet here --
                 val instrumentList = mutableListOf<Instrument>()
                 for (document in documents) {
-
+                    val docId = document.id
                     val instrument = document.toObject(Instrument::class.java)
+                        .copy(id = docId)
+                    if (FavoritesManager.isFavorite(instrument)) {
+                        instrument.isFavorite = true
+                    }
                     instrumentList.add(instrument)
                 }
 

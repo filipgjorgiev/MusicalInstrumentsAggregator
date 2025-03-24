@@ -19,21 +19,6 @@
             android:background="#00BCD4"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
-        <!-- Remove or hide the big category TextView -->
-        <!-- <TextView
-             android:id="@+id/categoryTitleTextView"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:text="Category Name"
-             android:textSize="24sp"
-             android:textStyle="bold"
-             android:layout_margin="16dp"
-             android:visibility="gone" /> -->
-
-        <!-- Two placeholders for filters -->
-        <!-- res/layout/activity_category_detail.xml -->
-
-        <!-- ... DrawerLayout/LinearLayout setup above ... -->
 
         <!-- First row: "Filter by price" + Spinner -->
         <LinearLayout
