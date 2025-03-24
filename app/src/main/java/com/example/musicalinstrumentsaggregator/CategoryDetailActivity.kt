@@ -5,102 +5,137 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import androidx.appcompat.widget.SearchView
-import android.widget.Spinner
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.firestore.FirebaseFirestore
 
 class CategoryDetailActivity : AppCompatActivity() {
-    private val TAG = "FirestoreDebug"
+
+    private val TAG = "CategoryDetail"
+
+    // Drawer / Toolbar
     private lateinit var detailDrawerLayout: DrawerLayout
     private lateinit var detailToolbar: Toolbar
     private lateinit var navView: NavigationView
     private lateinit var toggle: ActionBarDrawerToggle
 
+    // Spinners (for filtering)
     private lateinit var filterSpinnerPrice: Spinner
     private lateinit var filterSpinnerShop: Spinner
 
+    // SearchView
     private lateinit var searchView: SearchView
 
+    // The complete list of instruments for this category
     private var allInstruments: List<Instrument> = emptyList()
 
+    // Adapter for displaying instruments
     private lateinit var adapter: InstrumentAdapter
-
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_category_detail)
 
-        // 1. Find Views
+        // 1. Initialize Views & Toolbar
         detailDrawerLayout = findViewById(R.id.detailDrawerLayout)
         detailToolbar = findViewById(R.id.detailToolbar)
         navView = findViewById(R.id.navigationDetailView)
 
-        // 2. Setup the toolbar as the action bar
+        // Set the Toolbar as the ActionBar
         setSupportActionBar(detailToolbar)
 
-        // 3. Create the drawer toggle (hamburger icon)
+        // Create & sync the hamburger toggle for the drawer
         toggle = ActionBarDrawerToggle(
             this,
             detailDrawerLayout,
             detailToolbar,
-            R.string.navigation_drawer_open,  // from strings.xml
-            R.string.navigation_drawer_close  // from strings.xml
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
         )
         detailDrawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        // 4. Get the category name from the Intent
+        // 2. Retrieve Category Name from Intent
         val categoryName = intent.getStringExtra("categoryName") ?: "Unknown Category"
         supportActionBar?.title = categoryName
 
-        // 5. (Optional) Setup navigation items in detailNavigationView
-        // e.g., add "Home" and categories if you want the same menu:
-        // val menu = navView.menu
-        // menu.add("Home")
-        // menu.add("Another item")
-        // ...
+        // 3. Populate the Navigation Drawer items (Home, Favorites, and other categories)
+        setupNavigationDrawer()
 
-        val allCategories=InstrumentCategoriesData.getIconList()
+        // 4. Setup Filtering Spinners
+        setupSpinners()
 
+        // 5. Setup SearchView
+        setupSearchView()
+
+        // 6. Fetch Data from Firestore for this Category
+        val db = FirebaseFirestore.getInstance()
+        db.collection("/musical_instruments")
+            .whereEqualTo("Category", categoryName)
+            .get()
+            .addOnSuccessListener { documents ->
+                val instrumentList = mutableListOf<Instrument>()
+                for (document in documents) {
+                    // Use Firestore doc ID as the unique instrument id
+                    val docId = document.id
+                    val instrument = document.toObject(Instrument::class.java)
+                        .copy(id = docId)
+
+                    // If it's already in favorites, mark it so the UI shows the correct heart icon
+                    if (FavoritesManager.isFavorite(instrument)) {
+                        instrument.isFavorite = true
+                    }
+                    instrumentList.add(instrument)
+                }
+                // Store them in allInstruments for later filtering
+                allInstruments = instrumentList
+
+                // Display them in the RecyclerView
+                setupRecyclerView(instrumentList)
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error fetching instruments from Firestore", exception)
+            }
+    }
+
+    /**
+     * Populate the navigation drawer with "Home", "Favorites",
+     * and the list of all categories from InstrumentCategoriesData.
+     */
+    private fun setupNavigationDrawer() {
         val menu = navView.menu
 
+        // Add Home and Favorites items
         menu.add("Home")
         menu.add("Favorites")
 
-        for (category in allCategories){
+        // Add other categories from the data
+        val allCategories = InstrumentCategoriesData.getIconList()
+        for (category in allCategories) {
             menu.add(category.title)
         }
 
-
-        // 6. Handle menu item clicks
+        // Handle clicks on the drawer menu items
         navView.setNavigationItemSelectedListener { menuItem ->
             val selectedTitle = menuItem.title.toString()
             Log.d("NAV_DEBUG", "User tapped: $selectedTitle")
 
             when (selectedTitle) {
                 "Home" -> {
-                    // e.g., go back to MainActivity or refresh the main page
                     val intent = Intent(this, MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                     startActivity(intent)
                 }
-                "Favorites" ->{
+                "Favorites" -> {
                     val intent = Intent(this, FavoritesActivity::class.java)
                     startActivity(intent)
                 }
@@ -111,185 +146,118 @@ class CategoryDetailActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
             }
-
             detailDrawerLayout.closeDrawer(GravityCompat.START)
             true
         }
+    }
 
-
-
+    /**
+     * Setup the two spinners for filtering by price and shop.
+     */
+    private fun setupSpinners() {
         filterSpinnerPrice = findViewById(R.id.filterSpinnerPrice)
         filterSpinnerShop = findViewById(R.id.filterSpinnerShop)
 
-        // 3. Populate Spinners with sample data
-        // Populate them with sample data
+        // Sample data for the spinners
         val priceOptions = listOf("None", "Low to High", "High to Low")
         val shopOptions = listOf("None", "Do Re Mi", "Artist", "Mimi Muzika")
 
-        // Create ArrayAdapter for Spinner 1
-        val adapter1 = ArrayAdapter(this, R.layout.spinner_item, priceOptions)
-        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        filterSpinnerPrice.adapter = adapter1
+        // Price spinner
+        val priceAdapter = ArrayAdapter(this, R.layout.spinner_item, priceOptions)
+        priceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        filterSpinnerPrice.adapter = priceAdapter
 
-        // Create ArrayAdapter for Spinner 2
-        val adapter2 = ArrayAdapter(this, R.layout.spinner_item, shopOptions)
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        filterSpinnerShop.adapter = adapter2
+        // Shop spinner
+        val shopAdapter = ArrayAdapter(this, R.layout.spinner_item, shopOptions)
+        shopAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        filterSpinnerShop.adapter = shopAdapter
 
-//initializing firestore
-        val db = FirebaseFirestore.getInstance()
-
-
-////        // Check if Firestore is initialized
-//        if (db != null) {
-//            Log.d(TAG, "Firestore initialized successfully!")
-//        } else {
-//            Log.e(TAG, "Firestore failed to initialize!")
-//            return
-//        }
-//
-//        // Fetch data from Firestore
-//        db.collection("/musical_instruments")
-//            .get()
-//            .addOnSuccessListener { documents ->
-//                Log.d(TAG, "Success! Found ${documents.size()} documents.")
-//                if (documents.isEmpty) {
-//                    Log.d(TAG, "No documents in 'musical_instruments' collection.")
-//                } else {
-//                    for (document in documents) {
-//                        Log.d(TAG, "Document ID: ${document.id}")
-//                        Log.d(TAG, "Data: ${document.data}")
-//                    }
-//                }
-//            }
-//            .addOnFailureListener { exception ->
-//                Log.e(TAG, "Firestore Error: ", exception)
-//            }
-
-        // 3. Query instruments for this category
-        db.collection("/musical_instruments")
-            .whereEqualTo("Category", categoryName)
-            .get()
-            .addOnSuccessListener { documents ->
-                // -- Place your code snippet here --
-                val instrumentList = mutableListOf<Instrument>()
-                for (document in documents) {
-                    val docId = document.id
-                    val instrument = document.toObject(Instrument::class.java)
-                        .copy(id = docId)
-                    if (FavoritesManager.isFavorite(instrument)) {
-                        instrument.isFavorite = true
-                    }
-                    instrumentList.add(instrument)
-                }
-
-                allInstruments=instrumentList
-
-                // Now you have a list of Instrument objects
-                setupRecyclerView(instrumentList)
-            }
-            .addOnFailureListener { exception ->
-                // Handle error
-                Log.e("CategoryDetailActivity", "Error fetching instruments", exception)
-            }
-
-        // (Optional) Set up the toolbar title
-        supportActionBar?.title = categoryName
-
-        // 1. Find the SearchView
-        searchView = findViewById(R.id.searchView)
-        searchView.queryHint = "Search by name"
-        searchView.isIconified = false // Expand it
-
-        // 2. Set a listener to respond to query changes
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                // Called when user hits "search" or enters text, then confirms
-                return true // We handle it in onQueryTextChange for live filtering
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                // Called as the user types each character
-                val query = newText ?: ""
-
-                // Filter the allInstruments list
-                val filteredList = allInstruments.filter { instrument ->
-                    instrument.Name.contains(query, ignoreCase = true)
-                }
-
-                // Rebind the RecyclerView with the filtered list
-                setupRecyclerView(filteredList)
-
-                return true
-            }
-        })
-
-
+        // Listen for changes and apply filters
         filterSpinnerPrice.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                // Re-filter every time a selection changes
                 applyFilters()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-
         filterSpinnerShop.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 applyFilters()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-
-
-
-
-
-
-
-
-
     }
 
-    private fun applyFilters() {
-        // 1. Get current spinner selections
-        val selectedPriceFilter = filterSpinnerPrice.selectedItem.toString() // "None", "Low to High", "High to Low"
-        val selectedShopFilter = filterSpinnerShop.selectedItem.toString()   // "None", "Do Re Mi", etc.
+    /**
+     * Setup the search view to filter instruments by name as the user types.
+     */
+    private fun setupSearchView() {
+        searchView = findViewById(R.id.searchView)
+        searchView.queryHint = "Search by name"
+        searchView.isIconified = false // Expand it by default
 
-        // 2. Start with the full list
+        // Listen for text changes
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                // Called when user hits "search" or enters text, then confirms
+                return true // We'll handle filtering in onQueryTextChange
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                val query = newText ?: ""
+
+                // Filter the allInstruments list by name
+                val filteredList = allInstruments.filter { instrument ->
+                    instrument.Name.contains(query, ignoreCase = true)
+                }
+
+                // Update the RecyclerView
+                setupRecyclerView(filteredList)
+                return true
+            }
+        })
+    }
+
+    /**
+     * Apply filters based on the current spinner selections (price & shop).
+     */
+    private fun applyFilters() {
+        val selectedPriceFilter = filterSpinnerPrice.selectedItem.toString()
+        val selectedShopFilter = filterSpinnerShop.selectedItem.toString()
+
+        // Start with the full list
         var filteredList = allInstruments
 
-        // 3. Filter by shop if not "None"
+        // Filter by shop if not "None"
         if (selectedShopFilter != "None") {
             filteredList = filteredList.filter { it.Shop == selectedShopFilter }
         }
 
-        // 4. Sort by price if needed
+        // Sort by price if needed
         filteredList = when (selectedPriceFilter) {
-            "Low to High" -> filteredList.sortedBy { it.Price }  // ascending
+            "Low to High" -> filteredList.sortedBy { it.Price }
             "High to Low" -> filteredList.sortedByDescending { it.Price }
-            else -> filteredList // "None" => no sorting
+            else -> filteredList
         }
 
-        // 5. Update the RecyclerView
+        // Update the RecyclerView with the filtered list
         setupRecyclerView(filteredList)
     }
 
-
-
+    /**
+     * Initialize or update the RecyclerView with a given list of instruments.
+     * If the adapter isn't created yet, create it. Otherwise, update its data.
+     */
     private fun setupRecyclerView(instrumentList: List<Instrument>) {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewInCategory)
+
+        // If adapter not yet initialized, create it
         if (!::adapter.isInitialized) {
-            // First time
             adapter = InstrumentAdapter(instrumentList.toMutableList())
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.adapter = adapter
         } else {
-            // Just update the existing adapter data
+            // Just update the existing adapter's data
             adapter.updateData(instrumentList)
         }
     }
-
-
-
 }
-

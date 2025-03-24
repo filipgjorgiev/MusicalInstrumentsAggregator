@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -28,11 +27,24 @@ class FavoritesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_favorites)
 
-        // 1. Drawer + Navigation setup
+        // 1. Initialize Toolbar + Drawer
+        setupToolbarAndDrawer()
+
+        // 2. Populate Navigation Menu Items (Home + categories)
+        setupNavigationItems()
+
+        // 3. Set up RecyclerView & “No Favorites” placeholder
+        setupRecyclerViewAndEmptyState()
+    }
+
+    /**
+     * Set up the toolbar as the action bar and create the drawer toggle (hamburger icon).
+     */
+    private fun setupToolbarAndDrawer() {
         detailDrawerLayout = findViewById(R.id.detailDrawerLayout)
         navView = findViewById(R.id.navigationDetailView)
-
         detailToolbar = findViewById(R.id.detailToolbar)
+
         setSupportActionBar(detailToolbar)
         supportActionBar?.title = "Favorites"
 
@@ -45,16 +57,25 @@ class FavoritesActivity : AppCompatActivity() {
         )
         detailDrawerLayout.addDrawerListener(toggle)
         toggle.syncState()
+    }
 
-        // 2. Populate side menu items (Home + categories)
+    /**
+     * Populate the side menu with "Home" and all categories.
+     * Handle clicks on each menu item.
+     */
+    private fun setupNavigationItems() {
         val allCategories = InstrumentCategoriesData.getIconList()
         val menu = navView.menu
+
+        // Add "Home"
         menu.add("Home")
+
+        // Add each category to the menu
         for (category in allCategories) {
             menu.add(category.title)
         }
 
-        // 3. Navigation item clicks
+        // Handle menu item clicks
         navView.setNavigationItemSelectedListener { menuItem ->
             val selectedTitle = menuItem.title.toString()
             Log.d("NAV_DEBUG", "User tapped: $selectedTitle")
@@ -66,6 +87,7 @@ class FavoritesActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 else -> {
+                    // All other titles are categories
                     val intent = Intent(this, CategoryDetailActivity::class.java)
                     intent.putExtra("categoryName", selectedTitle)
                     startActivity(intent)
@@ -74,17 +96,23 @@ class FavoritesActivity : AppCompatActivity() {
             detailDrawerLayout.closeDrawer(GravityCompat.START)
             true
         }
+    }
 
-
-
-        // 4. RecyclerView setup
+    /**
+     * Get the current favorites from FavoritesManager.
+     * If the list is empty, show a "No favorites" text.
+     * Otherwise, show the RecyclerView with FavoritesAdapter.
+     */
+    private fun setupRecyclerViewAndEmptyState() {
         val recyclerView = findViewById<RecyclerView>(R.id.favoritesRecyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        // 5. Get the current favorites from the manager
-        val favoritesList = FavoritesManager.getFavorites().toMutableList()
         val noFavoritesTextView = findViewById<TextView>(R.id.noFavoritesTextView)
 
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        // Current favorites
+        val favoritesList = FavoritesManager.getFavorites().toMutableList()
+
+        // Check if empty
         if (favoritesList.isEmpty()) {
             recyclerView.visibility = View.GONE
             noFavoritesTextView.visibility = View.VISIBLE
@@ -92,14 +120,11 @@ class FavoritesActivity : AppCompatActivity() {
             recyclerView.visibility = View.VISIBLE
             noFavoritesTextView.visibility = View.GONE
         }
-        // 6. Use FavoritesAdapter with a callback if the list becomes empty
+
+        // Set the adapter with a callback when the last item is removed
         recyclerView.adapter = FavoritesAdapter(favoritesList) {
             // Called if the last item is removed => favoritesList.isEmpty()
-//            Toast.makeText(this, "The list of favorites is empty", Toast.LENGTH_SHORT).show()
-
-            // Hide the RecyclerView
             recyclerView.visibility = View.GONE
-            // Show the "No favorites" text
             noFavoritesTextView.visibility = View.VISIBLE
         }
     }

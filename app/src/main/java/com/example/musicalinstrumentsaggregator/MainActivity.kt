@@ -1,4 +1,5 @@
 package com.example.musicalinstrumentsaggregator
+
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,85 +10,75 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.musicalinstrumentsaggregator.R
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.FirebaseApp
-import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * The main entry point of the app. Displays a grid of category icons,
+ * and includes a navigation drawer with "Favorites" and other categories.
+ */
 class MainActivity : AppCompatActivity() {
-    private val TAG = "FirestoreDebug"
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var toggle: ActionBarDrawerToggle
 
+    private val TAG = "MainActivity"
+
+    // Drawer + toggle
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var drawerToggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initialize Firebase
-        FirebaseApp.initializeApp(this)
-
-        // Initialize FavoritesManager once
+        // 1. Initialize Firebase + FavoritesManager
+        initializeFirebase()
         FavoritesManager.init(this)
 
-        // Get Firestore instance
-//        val db = FirebaseFirestore.getInstance()
-//
-//        // Check if Firestore is initialized
-//        if (db != null) {
-//            Log.d(TAG, "Firestore initialized successfully!")
-//        } else {
-//            Log.e(TAG, "Firestore failed to initialize!")
-//            return
-//        }
-//
-//        // Fetch data from Firestore
-//        db.collection("/musical_instruments")
-//            .get()
-//            .addOnSuccessListener { documents ->
-//                Log.d(TAG, "Success! Found ${documents.size()} documents.")
-//                if (documents.isEmpty) {
-//                    Log.d(TAG, "No documents in 'musical_instruments' collection.")
-//                } else {
-//                    for (document in documents) {
-//                        Log.d(TAG, "Document ID: ${document.id}")
-//                        Log.d(TAG, "Data: ${document.data}")
-//                    }
-//                }
-//            }
-//            .addOnFailureListener { exception ->
-//                Log.e(TAG, "Firestore Error: ", exception)
-//            }
+        // 2. Setup Toolbar & Drawer
+        setupToolbarAndDrawer()
 
+        // 3. Setup the RecyclerView (grid of icons)
+        setupRecyclerView()
 
+        // 4. Setup the NavigationView menu items + handle clicks
+        setupNavigationMenu()
+    }
 
-        // 1. Find views
+    /**
+     * Initializes Firebase (call once).
+     */
+    private fun initializeFirebase() {
+        FirebaseApp.initializeApp(this)
+        // You can also add Firestore checks here if needed
+    }
+
+    /**
+     * Finds and sets up the toolbar as the action bar, creates the drawer toggle, and syncs it.
+     */
+    private fun setupToolbarAndDrawer() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         drawerLayout = findViewById(R.id.drawerLayout)
 
-        // 2. Set the Toolbar as the ActionBar
         setSupportActionBar(toolbar)
-        supportActionBar?.title = ""
-        // 3. Create ActionBarDrawerToggle
-        toggle = ActionBarDrawerToggle(
+        supportActionBar?.title = "" // Clear default title if desired
+
+        drawerToggle = ActionBarDrawerToggle(
             this,
             drawerLayout,
             toolbar,
-            R.string.navigation_drawer_open,  // "Open drawer" string
-            R.string.navigation_drawer_close  // "Close drawer" string
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
         )
+        drawerLayout.addDrawerListener(drawerToggle)
+        drawerToggle.syncState()
+    }
 
-        // 4. Attach the toggle to the DrawerLayout
-        drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
-
-        // 4. Optional: Setup RecyclerView for the grid
-//        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-//        recyclerView.layoutManager = GridLayoutManager(this, 2)
-//        recyclerView.adapter = MusicalInstrumentAdapter(getItems())
+    /**
+     * Sets up the main RecyclerView with a 2-column grid of category icons.
+     * Uses [IconAdapter] to handle item clicks that open CategoryDetailActivity.
+     */
+    private fun setupRecyclerView() {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-
-        // Show items in a grid of 2 columns
+        // Show items in a 2-column grid
         recyclerView.layoutManager = GridLayoutManager(this, 2)
 
         // Prepare your list of icons
@@ -95,33 +86,38 @@ class MainActivity : AppCompatActivity() {
 
         // Set the adapter
         recyclerView.adapter = IconAdapter(iconList)
+    }
 
-
+    /**
+     * Populates the NavigationView menu with "Favorites" + categories,
+     * and handles clicks for each item.
+     */
+    private fun setupNavigationMenu() {
         val navView = findViewById<NavigationView>(R.id.navigationView)
+        val iconList = InstrumentCategoriesData.getIconList()
 
-// 1. Get the menu object from the NavigationView
-        val menu = navView.menu
+        // Add "Favorites" to the menu
+        navView.menu.add("Favorites")
 
-// Add a "Home" item
-        menu.add("Favorites")
-
-// Add each category name from iconList as a menu item
+        // Add each category to the menu
         for (iconItem in iconList) {
-            menu.add(iconItem.title)
+            navView.menu.add(iconItem.title)
         }
 
-// 2. Handle clicks in the side menu
+        // Handle clicks in the side menu
         navView.setNavigationItemSelectedListener { menuItem ->
             val selectedTitle = menuItem.title.toString()
+            Log.d(TAG, "User tapped: $selectedTitle")
 
             if (selectedTitle == "Favorites") {
+                // Go to FavoritesActivity
                 val intent = Intent(this, FavoritesActivity::class.java)
                 startActivity(intent)
-
             } else {
                 // All other titles are categories
-                val intent = Intent(this, CategoryDetailActivity::class.java)
-                intent.putExtra("categoryName", selectedTitle)
+                val intent = Intent(this, CategoryDetailActivity::class.java).apply {
+                    putExtra("categoryName", selectedTitle)
+                }
                 startActivity(intent)
             }
 
@@ -129,27 +125,5 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
-
-// 3. (Optional) Handle menu item clicks
-//        navView.setNavigationItemSelectedListener { menuItem ->
-//            // Here you can see which item was clicked
-//            // For example, compare menuItem.title or use an ID
-//            // e.g. "Acoustic Guitars", "Electric Guitars", etc.
-//            when (menuItem.title) {
-//                "Acoustic Guitars" -> {
-//                    // do something
-//                }
-//                "Electric Guitars" -> {
-//                    // do something
-//                }
-//                // ...
-//            }
-//
-//            // Close the drawer
-            drawerLayout.closeDrawer(GravityCompat.START)
-            true
-//        }
-
-
     }
 }
