@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = findViewById(R.id.drawerLayout)
 
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "" // Clear default title if desired
+        supportActionBar?.title = "Musical Instruments"
 
         drawerToggle = ActionBarDrawerToggle(
             this,

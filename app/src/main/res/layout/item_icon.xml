@@ -15,10 +15,12 @@
 
     <TextView
         android:id="@+id/itemTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Instuments"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:text="Instruments"
         android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginTop="8dp"/>
+        android:textColor="@color/black" />
+
 </LinearLayout>
