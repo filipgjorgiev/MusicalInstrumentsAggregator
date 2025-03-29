@@ -34,13 +34,15 @@
                 android:layout_height="wrap_content"
                 android:text="Filter by price"
                 android:textSize="16sp"
+                android:gravity="center_vertical"
                 android:layout_marginEnd="8dp" />
 
             <Spinner
                 android:id="@+id/filterSpinnerPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:spinnerMode="dropdown" />
+                android:spinnerMode="dropdown"
+                android:gravity="center"/>
         </LinearLayout>
 
         <!-- Second row: "Filter by shop" + Spinner -->
@@ -57,13 +59,15 @@
                 android:layout_height="wrap_content"
                 android:text="Filter by shop"
                 android:textSize="16sp"
+                android:gravity="center_vertical"
                 android:layout_marginEnd="8dp" />
 
             <Spinner
                 android:id="@+id/filterSpinnerShop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:spinnerMode="dropdown" />
+                android:spinnerMode="dropdown"
+                android:gravity="center"/>
         </LinearLayout>
 
         <!-- ... rest of your layout (e.g., instrumentsPlaceholder, etc.) ... -->
@@ -71,10 +75,12 @@
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:queryHint="Search by name"
             android:iconifiedByDefault="false"
-            android:layout_margin="8dp" />
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:layout_margin="6dp"/>
 
         <!-- Placeholder for instruments list -->
         <androidx.recyclerview.widget.RecyclerView
