@@ -53,11 +53,11 @@ class InstrumentAdapter(
             openInstrumentLink(holder.itemView.context, instrument.Link)
         }
 
-        // Format and bind the price
+
         val priceFormatted = formatPrice(instrument.Price)
         holder.priceTextView.text = priceFormatted
 
-        // Show the shop name
+
         holder.shopTextView.text = instrument.Shop
 
         // Load the image via Coil

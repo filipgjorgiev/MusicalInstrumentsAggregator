@@ -48,18 +48,18 @@ class FavoritesAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val instrument = favoritesList[position]
 
-        // Set instrument name
+
         holder.nameTextView.text = instrument.Name
-        // Clicking the name opens a link (if available)
+
         holder.nameTextView.setOnClickListener {
             openInstrumentLink(holder.itemView.context, instrument.Link)
         }
 
-        // Format the price with commas + "MKD"
+
         val priceFormatted = formatPrice(instrument.Price)
         holder.priceTextView.text = priceFormatted
 
-        // Show the shop name
+
         holder.shopTextView.text = instrument.Shop
 
         // Load the instrument image (if any) using Coil
@@ -68,7 +68,7 @@ class FavoritesAdapter(
             openInstrumentLink(holder.itemView.context, instrument.Link)
         }
 
-        // This is Favorites, so show a filled heart icon
+
         holder.favouriteIcon.setImageResource(R.drawable.ic_favorite_filled)
 
         // When user taps the heart again, remove from favorites
@@ -81,14 +81,14 @@ class FavoritesAdapter(
      * Removes the item from both FavoritesManager and the local list, then calls onEmptyCallback if list is empty.
      */
     private fun removeFavoriteItem(holder: ViewHolder, position: Int, instrument: Instrument) {
-        // 1. Remove from global manager
+        // Remove from global manager
         FavoritesManager.removeFavorite(instrument)
 
-        // 2. Remove from this adapter's data list
+        // Remove from this adapter's data list
         favoritesList.removeAt(holder.adapterPosition)
         notifyItemRemoved(holder.adapterPosition)
 
-        // 3. If the list is now empty, invoke our callback
+        // If the list is now empty, invoke our callback
         if (favoritesList.isEmpty()) {
             onEmptyCallback()
         }

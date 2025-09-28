@@ -70,7 +70,7 @@
                 android:gravity="center"/>
         </LinearLayout>
 
-        <!-- ... rest of your layout (e.g., instrumentsPlaceholder, etc.) ... -->
+
         <!-- Search row -->
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchView"

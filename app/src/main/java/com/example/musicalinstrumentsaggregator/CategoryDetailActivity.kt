@@ -127,7 +127,6 @@ class CategoryDetailActivity : AppCompatActivity() {
         // Handle clicks on the drawer menu items
         navView.setNavigationItemSelectedListener { menuItem ->
             val selectedTitle = menuItem.title.toString()
-            Log.d("NAV_DEBUG", "User tapped: $selectedTitle")
 
             when (selectedTitle) {
                 "Home" -> {
@@ -198,8 +197,7 @@ class CategoryDetailActivity : AppCompatActivity() {
         // Listen for text changes
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                // Called when user hits "search" or enters text, then confirms
-                return true // We'll handle filtering in onQueryTextChange
+                return true // Handle filtering in onQueryTextChange
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
@@ -224,15 +222,15 @@ class CategoryDetailActivity : AppCompatActivity() {
         val selectedPriceFilter = filterSpinnerPrice.selectedItem.toString()
         val selectedShopFilter = filterSpinnerShop.selectedItem.toString()
 
-        // Start with the full list
+
         var filteredList = allInstruments
 
-        // Filter by shop if not "None"
+        // Filter by shop
         if (selectedShopFilter != "None") {
             filteredList = filteredList.filter { it.Shop == selectedShopFilter }
         }
 
-        // Sort by price if needed
+        // Sort by price
         filteredList = when (selectedPriceFilter) {
             "Low to High" -> filteredList.sortedBy { it.Price }
             "High to Low" -> filteredList.sortedByDescending { it.Price }

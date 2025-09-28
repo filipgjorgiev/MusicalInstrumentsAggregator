@@ -27,13 +27,12 @@ class FavoritesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_favorites)
 
-        // 1. Initialize Toolbar + Drawer
         setupToolbarAndDrawer()
 
-        // 2. Populate Navigation Menu Items (Home + categories)
+
         setupNavigationItems()
 
-        // 3. Set up RecyclerView & “No Favorites” placeholder
+
         setupRecyclerViewAndEmptyState()
     }
 
@@ -67,10 +66,10 @@ class FavoritesActivity : AppCompatActivity() {
         val allCategories = InstrumentCategoriesData.getIconList()
         val menu = navView.menu
 
-        // Add "Home"
+
         menu.add("Home")
 
-        // Add each category to the menu
+
         for (category in allCategories) {
             menu.add(category.title)
         }
@@ -78,7 +77,6 @@ class FavoritesActivity : AppCompatActivity() {
         // Handle menu item clicks
         navView.setNavigationItemSelectedListener { menuItem ->
             val selectedTitle = menuItem.title.toString()
-            Log.d("NAV_DEBUG", "User tapped: $selectedTitle")
 
             when (selectedTitle) {
                 "Home" -> {
@@ -87,7 +85,7 @@ class FavoritesActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 else -> {
-                    // All other titles are categories
+
                     val intent = Intent(this, CategoryDetailActivity::class.java)
                     intent.putExtra("categoryName", selectedTitle)
                     startActivity(intent)

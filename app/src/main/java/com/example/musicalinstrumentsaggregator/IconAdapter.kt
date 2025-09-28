@@ -35,7 +35,7 @@ class IconAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = items[position]
 
-        // Bind the icon title and image resource
+
         holder.title.text = currentItem.title
         holder.image.setImageResource(currentItem.imageRes)
 

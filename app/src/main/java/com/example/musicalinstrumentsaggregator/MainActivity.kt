@@ -44,11 +44,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Initializes Firebase (call once).
+     * Initializes Firebase
      */
     private fun initializeFirebase() {
         FirebaseApp.initializeApp(this)
-        // You can also add Firestore checks here if needed
+
     }
 
     /**
@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         // Show items in a 2-column grid
         recyclerView.layoutManager = GridLayoutManager(this, 2)
 
-        // Prepare your list of icons
+
         val iconList = InstrumentCategoriesData.getIconList()
 
         // Set the adapter
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
         val navView = findViewById<NavigationView>(R.id.navigationView)
         val iconList = InstrumentCategoriesData.getIconList()
 
-        // Add "Favorites" to the menu
+
         navView.menu.add("Favorites")
 
         // Add each category to the menu
