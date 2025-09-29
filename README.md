@@ -19,7 +19,7 @@ The app is designed to help music enthusiasts easily explore instruments across 
 - The scraped data (name, category, price, shop, description, and URL) is stored in a **CSV file**.  
 - The CSV file is then uploaded to **Firebase**, making it accessible for the app.
 
-### 2. Data Loading
+### 2. Data Preview
 - When the app starts, it retrieves the instrument data from Firebase.  
 - Data is displayed in a **RecyclerView**, allowing users to browse instruments by category (e.g., acoustic guitars, electric guitars, pianos, drums) and explore items from multiple shops. A convenient sidebar menu also lets users jump directly to a category or open their Favorites section.
   
