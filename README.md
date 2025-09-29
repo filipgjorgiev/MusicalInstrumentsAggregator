@@ -64,5 +64,5 @@ The app is designed to help music enthusiasts easily explore instruments across 
 - When a user taps on an instrument in the list, the app immediately opens the original product page on the shop’s website.  
 - This is handled using an **implicit intent** to launch the browser with the instrument’s URL.
 
-Here is a link of a demo where i show the functionalities of the App
-- https://drive.google.com/file/d/1o8-U6BnNA6axE99MTWixQlFYCBTWJ1i_/view?usp=sharing
+### 6. Demo
+[Watch the Demo](https://drive.google.com/file/d/1o8-U6BnNA6axE99MTWixQlFYCBTWJ1i_/view?usp=sharing)
