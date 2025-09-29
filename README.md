@@ -15,13 +15,13 @@ The app is designed to help music enthusiasts easily explore instruments across 
 ##  How It Works
 
 ### 1. Data Collection 
-- Instrument data is scraped from the three shops (**Do Re Mi**, **Artist**, **Mimi Muzika**) using a custom script.  
+- Instrument data is **scraped** from the three shops (**Do Re Mi**, **Artist**, **Mimi Muzika**) using a custom script.  
 - The scraped data (name, category, price, shop, description, and URL) is stored in a **CSV file**.  
 - The CSV file is then uploaded to **Firebase**, making it accessible for the app.
 
 ### 2. Data Loading
 - When the app starts, it retrieves the instrument data from Firebase.  
-- Data is displayed in a RecyclerView, allowing users to browse instruments by category (e.g., acoustic guitars, electric guitars, pianos, drums) and explore items from multiple shops. A convenient sidebar menu also lets users jump directly to a category or open their Favorites section.
+- Data is displayed in a **RecyclerView**, allowing users to browse instruments by category (e.g., acoustic guitars, electric guitars, pianos, drums) and explore items from multiple shops. A convenient sidebar menu also lets users jump directly to a category or open their Favorites section.
   
   <p float="left">
   <img src="screenshots/HomeScreen.jpg" width="220"  /> &nbsp;
